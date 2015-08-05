@@ -10,13 +10,13 @@ from bokeh.models import (
     BasicTicker, ColumnDataSource, Grid, GridPlot, LinearAxis,
     DataRange1d, PanTool, Plot, WheelZoomTool
 )
+from bokeh.properties import value
 from bokeh.resources import INLINE
 from bokeh.sampledata.iris import flowers
 
 colormap = {'setosa': 'red', 'versicolor': 'green', 'virginica': 'blue'}
 
 flowers['color'] = flowers['species'].map(lambda x: colormap[x])
-
 
 source = ColumnDataSource(
     data=dict(
@@ -26,10 +26,6 @@ source = ColumnDataSource(
         sepal_width=flowers['sepal_width'],
         color=flowers['color']
     )
-)
-
-text_source = ColumnDataSource(
-    data=dict(xcenter=[125], ycenter=[135])
 )
 
 xdr = DataRange1d()
@@ -64,14 +60,16 @@ def make_plot(xname, yname, xax=False, yax=False, text=None):
     plot.add_tools(PanTool(), WheelZoomTool())
 
     if text:
-        text = " ".join(text.split('_'))
-        text = Text(
-            x={'field':'xcenter', 'units':'screen'},
-            y={'field':'ycenter', 'units':'screen'},
-            text=[text], angle=pi/4, text_font_style="bold", text_baseline="top",
-            text_color="#ffaaaa", text_alpha=0.7, text_align="center", text_font_size="28pt"
-        )
-        plot.add_glyph(text_source, text)
+        # TODO: this should be some kind of annotation/water mark instead.
+        label = Text(
+            x=0, x_offset= 125,
+            y=0, y_offset=-125,
+            text=value(" ".join(text.split('_'))),
+            angle=pi/4,
+            text_color="#ffaaaa", text_alpha=0.7,
+            text_font_size="28pt", text_font_style="bold",
+            text_baseline="top", text_align="center")
+        plot.add_glyph(label)
 
     return plot
 
