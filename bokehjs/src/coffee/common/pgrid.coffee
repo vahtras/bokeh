@@ -37,6 +37,12 @@ class PGridView extends ContinuumView
     that = this
     window.addEventListener('resize', () -> that.panel.update())
 
+  resize_widget: (msg) ->
+    w = msg.width
+    h = msg.height
+    console.log(w + ', ' + h)
+    @.plot_view.resize(w)
+
   build_children: () ->
     # Get views
     child_models = []
@@ -57,17 +63,15 @@ class PGridView extends ContinuumView
         icol += 1
         if not child?
           continue
+        child.phosphor_widget = true
         w = new widget.Widget()
         el = @views[child.id].$el[0]
         w.node.appendChild(el)
+        w.plot_view = @views[child.id]
+        w.onResize = @resize_widget
         ww.push(w)
         gridpanel.GridPanel.setRow(w, irow)
         gridpanel.GridPanel.setColumn(w, icol)
-        # note: there's also setRowSpan, setColumnSpan
-        # Tweak CSS to horizontally center-align plots
-        if child.type == 'Plot'
-          el.style.width = child.get('plot_width') + 'px'
-          el.style.margin = 'auto' 
     @panel.children = ww
     
     # Specs

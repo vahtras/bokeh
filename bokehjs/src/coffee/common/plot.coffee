@@ -125,7 +125,7 @@ class PlotView extends ContinuumView
 
     if @mget('responsive')
       throttled_resize = _.throttle(@resize, 100)
-      $(window).on("resize", throttled_resize)
+      #$(window).on("resize", throttled_resize)
       $(@resize)
 
     @unpause()
@@ -361,7 +361,7 @@ class PlotView extends ContinuumView
     # TODO - This should only be on in testing
     # @$el.find('canvas').attr('data-hash', ctx.hash());
     
-  resize: () =>
+  resize: (new_width) =>
     canvas_height = @canvas.get('height')
     canvas_width = @canvas.get('width')
     # Calculating this each time means that we play nicely with resize tool
@@ -372,7 +372,9 @@ class PlotView extends ContinuumView
     # user-configurable in the future, as it may not be the right number 
     # if people set a large border on their plots, for example.
     min_size = @mget('min_size')
-    new_width = Math.max(@.el.clientWidth, min_size)
+    if new_width
+      new_width = @.el.clientWidth
+    new_width = Math.max(new_width, min_size)
     new_height = parseInt(new_width / aspect_ratio)
 
     if new_height < min_size
@@ -561,6 +563,7 @@ class Plot extends HasParent
       webgl: false
       responsive: false
       min_size: 100
+      phosphor_widget: false
     }
 
   display_defaults: ->
